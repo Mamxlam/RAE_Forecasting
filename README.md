@@ -18,3 +18,5 @@ API) that will include endpoints for providing your predictions.
 - Include a separate page for your forecasting solution in your Streamlit App
 (Forecasting) that will visualize your predictions and some metrics on the accuracy of
 your model/method.
+
+Data Available on RAE Permits page: https://www.rae.gr/ape/adeiodotisi-2/adeies-ape/
