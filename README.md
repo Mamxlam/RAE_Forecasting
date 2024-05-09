@@ -20,3 +20,7 @@ API) that will include endpoints for providing your predictions.
 your model/method.
 
 Data Available on RAE Permits page: https://www.rae.gr/ape/adeiodotisi-2/adeies-ape/
+
+### Prerequisites
+- You need to have an active conda installation. For installation steps please refer here: https://conda.io/projects/conda/en/latest/user-guide/install/index.html 
+- To use the exact develpoment environment in conda you can execute the following in the root directory of the project: <code>conda env create -f environment.yml</code> (you can also use -n <name> to define an env name) 
