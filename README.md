@@ -20,3 +20,6 @@ API) that will include endpoints for providing your predictions.
 your model/method.
 
 Data Available on RAE Permits page: https://www.rae.gr/ape/adeiodotisi-2/adeies-ape/
+
+To use the exact develpoment environment in conda you can execute the following in the root directory of the project. 
+conda env create -f environment.yml (you can also use -n <name> to define an env name)
