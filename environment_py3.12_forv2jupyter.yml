@@ -1,6 +1,5 @@
-name: rae_forecasting
+name: rae_fc_env
 channels:
-  - plotly
   - anaconda
   - conda-forge
   - defaults
@@ -34,9 +33,9 @@ dependencies:
   - brotli-python=1.0.9=py312h6a678d5_8
   - bzip2=1.0.8=h5eee18b_6
   - c-ares=1.19.1=h5eee18b_0
-  - ca-certificates=2024.3.11=h06a4308_0
+  - ca-certificates=2024.2.2=hbcca054_0
   - cachetools=5.3.3=py312h06a4308_0
-  - certifi=2024.2.2=py312h06a4308_0
+  - certifi=2024.2.2=pyhd8ed1ab_0
   - charset-normalizer=2.0.4=pyhd3eb1b0_0
   - click=8.1.7=py312h06a4308_0
   - comm=0.2.2=pyhd8ed1ab_0
@@ -48,6 +47,7 @@ dependencies:
   - exceptiongroup=1.2.0=pyhd8ed1ab_2
   - executing=2.0.1=pyhd8ed1ab_0
   - expat=2.6.2=h6a678d5_0
+  - flask=3.0.3=pyhd8ed1ab_0
   - fonttools=4.51.0=py312h5eee18b_0
   - freetype=2.12.1=h4a9f257_0
   - gflags=2.2.2=h6a678d5_1
@@ -62,6 +62,8 @@ dependencies:
   - intel-openmp=2023.1.0=hdb19cb5_46306
   - ipykernel=6.29.3=pyhd33586a_0
   - ipython=8.22.2=pyh707e725_0
+  - ipython_genutils=0.2.0=pyhd8ed1ab_1
+  - itsdangerous=2.2.0=pyhd8ed1ab_0
   - jedi=0.19.1=pyhd8ed1ab_0
   - jinja2=3.1.3=py312h06a4308_0
   - joblib=1.4.0=py312h06a4308_0
@@ -109,6 +111,7 @@ dependencies:
   - mdurl=0.1.0=py312h06a4308_0
   - mkl=2023.1.0=h213fc3f_46344
   - mkl-service=2.4.0=py312h5eee18b_1
+  - nbformat=5.1.3=pyhd3eb1b0_0
   - ncurses=6.4=h6a678d5_0
   - nest-asyncio=1.6.0=pyhd8ed1ab_0
   - numexpr=2.8.7=py312he7dcb8a_0
@@ -117,7 +120,7 @@ dependencies:
   - openblas=0.3.4=ha44fe06_0
   - openjpeg=2.4.0=h3ad879b_0
   - openpyxl=3.0.10=py312h5eee18b_0
-  - openssl=3.3.0=hd590300_0
+  - openssl=3.3.0=h4ab18f5_3
   - orc=1.7.4=hb3bc3d3_1
   - packaging=23.2=py312h06a4308_0
   - pandas=2.1.1=py312h526ad5a_0
@@ -127,7 +130,7 @@ dependencies:
   - pillow=10.3.0=py312h5eee18b_0
   - pip=24.0=py312h06a4308_0
   - platformdirs=4.2.1=pyhd8ed1ab_0
-  - plotly=5.22.0=py_0
+  - plotly=5.22.0=pyhd8ed1ab_0
   - prompt-toolkit=3.0.42=pyha770c72_0
   - protobuf=3.20.3=py312h6a678d5_0
   - psutil=5.9.0=py312h5eee18b_0
@@ -178,6 +181,7 @@ dependencies:
   - validators=0.18.2=pyhd3eb1b0_0
   - watchdog=2.1.6=py312h06a4308_0
   - wcwidth=0.2.13=pyhd8ed1ab_0
+  - werkzeug=3.0.3=pyhd8ed1ab_0
   - wheel=0.43.0=py312h06a4308_0
   - xz=5.4.6=h5eee18b_1
   - yaml=0.2.5=h7b6447c_0
