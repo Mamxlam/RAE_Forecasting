@@ -8,10 +8,23 @@ st.title('Observatory page 🔍')
 from streamlit_folium import st_folium
 import folium as fo
 
+## observatory pages was
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+
+
 # streamlit run C:\Users\Nikolas\PycharmProjects\Master_Projects\web_mining_project_2_final\RAE_Forecasting\src\st_app\bouzi_main_streamlit.py
 
 # ./RAE_Forecasting/src/st_app/pages/observatory_page.csv
-df = pd.read_csv('./data/observatory_page.csv')
+df = pd.read_csv('./RAE_FORECASTING/data/observatory_page.csv')
 # df = pd.read_csv('./observatory_page.csv')
 
 list_drop_cols = ['Unnamed: 0','RSI','ΑΙΤΗΣΗ','ΑΡ. ΜΗΤΡΩΟΥ ΑΔΕΙΩΝ ΡΑΕ','ΠΕΡΙΦΕΡΕΙΑΚΗ ΕΝΟΤΗΤΑ', 'ΔΗΜΟΣ ', 'ΔΗΜΟΤΙΚΗ ΕΝΟΤΗΤΑ',
