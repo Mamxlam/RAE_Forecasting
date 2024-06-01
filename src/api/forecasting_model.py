@@ -26,6 +26,11 @@ def lgbm_smape(preds, train_data):
     return 'SMAPE', smape_val, False
 
 
+from datetime import timedelta
+import lightgbm as lgb
+from sklearn.metrics import mean_squared_error, mean_absolute_percentage_error
+import numpy as np
+
 def train_and_forecast(df, target_column, last_index, validity_offset_days=30*24):
     df = df.copy()
 
@@ -37,9 +42,6 @@ def train_and_forecast(df, target_column, last_index, validity_offset_days=30*24
 
     # Define the last date for the training set
     train_end_date = last_index - validity_offset
-
-    # breakpoint()
-    print(df.head())
 
     # Split the data into training and validation sets
     train_df = df[df.index <= train_end_date]
@@ -100,6 +102,18 @@ def train_and_forecast(df, target_column, last_index, validity_offset_days=30*24
     mape = mean_absolute_percentage_error(y_valid, y_valid_pred)
     print(f'Validation MAPE: {mape}')
 
-    y_forecast = bst.predict(X_pred, num_iteration=bst.best_iteration)
+    # Evaluate MAPE
+    mape_sum = mean_absolute_percentage_error([np.sum(y_valid)], [np.sum(y_valid_pred)])
+    print(f'Validation MAPE Sum within window: {mape_sum}')
 
-    return y_forecast, rmse, mape
+    smape_sum = smape([np.sum(y_valid_pred)], [np.sum(y_valid)]) / 100
+    print(f'Validation SMAPE Sum within window: {smape_sum}')
+
+
+    y_forecast_pred = bst.predict(X_pred, num_iteration=bst.best_iteration)
+
+    # Combine the forecasts
+    y_forecast = np.concatenate([y_valid_pred, y_forecast_pred])
+    forecast_dates = np.concatenate([valid_df.index, pred_df.index])
+
+    return y_forecast, forecast_dates, rmse, mape, mape_sum, smape_sum
