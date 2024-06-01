@@ -24,6 +24,8 @@ def load_data(filepath):
                       'ΗΜΕΡΟΜΗΝΙΑ ΛΗΞΗΣ ΑΔ.ΠΑΡΑΓΩΓΗΣ', 'ΗΜΕΡΟΜΗΝΙΑ ΥΠΟΒΟΛΗΣ ΑΙΤΗΣΗΣ', 'ΕΤΑΙΡΕΙΑ']
     df.drop(columns=list_drop_cols, inplace=True)
     df['ΗΜΕΡΟΜΗΝΙΑ ΕΚΔ. ΑΔ.ΠΑΡΑΓΩΓΗΣ'] = pd.to_datetime(df['ΗΜΕΡΟΜΗΝΙΑ ΕΚΔ. ΑΔ.ΠΑΡΑΓΩΓΗΣ'], format='%Y-%m-%d %H:%M:%S', errors='coerce')
+    df['ΤΕΧΝΟΛΟΓΙΑ'] = df['ΤΕΧΝΟΛΟΓΙΑ'].str.upper().str.strip().str.replace(' ', '')   # Standardize capitalization and remove leading/trailing spaces
+    df = df.drop_duplicates()  # Remove duplicate rows
     return df
 
 df = load_data('/home/marios/projects/RAE_Forecasting/data/processed_data/all_ape_data_nodup_rsi.csv')
