@@ -98,13 +98,21 @@ with st.container():
        with right_part_region_type:
            fig_region_type = px.bar(permit_region_type_v1,x='ΤΕΧΝΟΛΟΓΙΑ',y='ΣΥΝΟΛΙΚΟΣ ΑΡΙΘΜΟΣ ΑΠΕ',title='Αριθμός αδειών ανά ΠΕΡΙΦΈΡΕΙΑ')
            st.plotly_chart(fig_region_type)
+# --------------------------------------     TOTAL NUMBER OF PERMITS FOR ALL REGIONS -----------------------------------------------------------------#
+st.header('ΠΛΗΘΟΣ ΑΔΕΙΩΝ ΓΙΑ ΟΛΕΣ ΤΙΣ ΠΕΡΙΦΕΡΕΙΕΣ')
+permit_region_type_total = df.copy()
+permit_region_type_total_v1 = permit_region_type_total.groupby('ΠΕΡΙΦΕΡΕΙΑ').agg({'ΤΕΧΝΟΛΟΓΙΑ':['count']}).reset_index()
+permit_region_type_total_v1.columns = ['ΠΕΡΙΦΕΡΕΙΑ','ΠΛΗΘΟΣ ΑΔΕΙΩΝ']
+st.table(permit_region_type_total_v1)
+
+
 #--------------------------------------------  Total produces MW per APE AND PER REGION --------------------------------------------------------------#
 
 power_region_df = df.copy()
 st.header('ΣΥΝΟΛΙΚΑ MW ΑΝΑ ΑΠΕ ΚΑΙ ΠΕΡΙΦΕΡΕΙΑ')
 with st.container():
 
-    print(power_region_df['ΠΕΡΙΦΕΡΕΙΑ'].unique())
+    # print(power_region_df['ΠΕΡΙΦΕΡΕΙΑ'].unique())
 
     select_region1 = st.selectbox('Επιλέξτε περιφέρεια', power_region_df['ΠΕΡΙΦΕΡΕΙΑ'].unique(), key='select_region1')
 
@@ -131,6 +139,7 @@ st.header('ΧΑΡΤΗΣ ΜΕ ΑΡΙΘΜΟ ΑΔΕΙΩΝ ΑΝΑ ΠΕΡΙΦΕΡΕΙ
 map_df = df.copy()
 select_technology = st.selectbox('Επιλέξτε περιφέρεια', power_region_df['ΤΕΧΝΟΛΟΓΙΑ'].unique())
 map_df_1 = map_df.loc[map_df['ΤΕΧΝΟΛΟΓΙΑ']==select_technology]
+
 mapping_region ={
     'ΣΤΕΡΕΑΣ ΕΛΛΑΔΟΣ':'ΛΑΜΙΑ',
     'ΝΟΤΙΟΥ ΑΙΓΑΙΟΥ':'ΕΡΜΟΥΠΟΛΗ',
@@ -145,7 +154,11 @@ mapping_region ={
     'ΠΕΛΟΠΟΝΝΗΣΟΥ':'ΤΡΙΠΟΛΗ',
     'ΑΤΤΙΚΗΣ':'ΑΘΗΝΑ',
     'ΙΟΝΙΩΝ ΝΗΣΙΩΝ':'ΚΕΡΚΥΡΑ'}
+
 map_df_1['ΠΟΛΗ'] =  map_df_1['ΠΕΡΙΦΕΡΕΙΑ'].map(mapping_region)
+
+
+# print(map_df_1['ΠΟΛΗ'].unique())
 city_cor={
  'ΛΑΜΙΑ':(38.895973,22.4349),
 'ΕΡΜΟΥΠΟΛΗ':(37.45,24.9),
@@ -162,7 +175,7 @@ city_cor={
     'ΚΕΡΚΥΡΑ':(39.625,19.9223)
 }
 map_df_1['cor'] =  map_df_1['ΠΟΛΗ'].map(city_cor)
-# print(map_df_1)
+
 map_df_1 = map_df_1.groupby('ΠΕΡΙΦΕΡΕΙΑ').agg({'ΙΣΧΥΣ (MW)':'count','cor':'first'}).reset_index()
 map_df_1.columns = ['ΠΕΡΙΦΕΡΕΙΑ','ΙΣΧΥΣ (MW)','coordinates']
 
