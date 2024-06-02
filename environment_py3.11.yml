@@ -210,4 +210,3 @@ dependencies:
   - zeromq=4.3.5=h75354e8_4
   - zipp=3.17.0=pyhd8ed1ab_0
   - zstd=1.5.6=ha6fb4c9_0
-prefix: /home/marios/anaconda3/envs/rae_fc_env_3.11
