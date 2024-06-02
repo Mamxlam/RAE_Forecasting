@@ -297,12 +297,22 @@ if st.session_state.get('processed_data_available', False):
 
     # Autocorrelation Plot
     st.subheader('Autocorrelation Function (ACF)')
+    st.markdown("""
+    The **Autocorrelation Function (ACF)** measures the correlation between a time series and its past values (lags). 
+    It helps identify the extent to which current values of the series are influenced by past values. 
+    Significant autocorrelation at lag k indicates that the series is k-period autocorrelated.
+    """)
     acf_lags = st.slider('Select number of lags for ACF', min_value=1, max_value=120, value=30)
     acf_fig, acf_vals, acf_conf = plot_autocorrelation(extended_result[decompose_column], acf_lags)
     st.plotly_chart(acf_fig)
 
     # Partial Autocorrelation Plot
     st.subheader('Partial Autocorrelation Function (PACF)')
+    st.markdown("""
+    The **Partial Autocorrelation Function (PACF)** measures the direct effect of past values on the current value, 
+    removing the effects of intermediate lags. It helps identify the specific lag values that are most influential 
+    in the series without the influence of other lags. This is useful for determining the order of an ARIMA model.
+    """)
     pacf_lags = st.slider('Select number of lags for PACF', min_value=1, max_value=120, value=30)
     pacf_fig, pacf_vals, pacf_conf = plot_pautocorrelation(extended_result[decompose_column], pacf_lags)
     st.plotly_chart(pacf_fig)
