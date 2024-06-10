@@ -4,6 +4,9 @@ import requests
 import plotly.graph_objects as go
 import io
 import random
+import plotly.express as px
+import lightgbm as lgb
+import json
 
 from utils import get_aggregated_data, process_time_series, forecast, plot_columns_by_pattern
 
@@ -17,6 +20,20 @@ FIG_HEIGHT = 0.4 * FIG_WIDTH  # Maintain aspect ratio
 # Streamlit App
 st.title('Forecasting Page 📈')
 
+
+def plot_feature_importance(feature_importance, model_name):
+    feature_importance_df = pd.DataFrame(feature_importance, columns=['feature', 'importance'])
+    feature_importance_df = feature_importance_df[feature_importance_df['importance']!=0]
+    fig = px.bar(feature_importance_df, x='importance', y='feature', orientation='h', title=f'{model_name} Feature Importance')
+    fig.update_layout(yaxis={'categoryorder':'total ascending'})
+    st.plotly_chart(fig)
+
+def save_model_to_json(bst):
+    # Convert the model to a JSON-compatible dictionary
+    model_dict = bst.dump_model()
+    # Serialize the dictionary to a JSON string
+    model_json = json.dumps(model_dict, indent=4)
+    return model_json
 
 # Sidebar for input parameters
 st.sidebar.header('Input Parameters')
@@ -58,22 +75,43 @@ if uploaded_file is not None:
 
         if st.sidebar.button('Forecast'):
             st.sidebar.markdown("---")
-            forecast_data, forecast_dates, rmse, mape, mape_sum, smape_sum = forecast('cache/extended_result.csv', target_column, last_index.strftime('%Y-%m-%d'), validity_offset_days)
-            if forecast_data is not None:
-                st.session_state.forecast_data = forecast_data
-                st.session_state.forecast_dates = forecast_dates
-                st.session_state.rmse = rmse
-                st.session_state.mape = mape
-                st.session_state.mape_sum = mape_sum
-                st.session_state.smape_sum = smape_sum
-                st.session_state.last_index = last_index
+        # Example usage within the Streamlit app
+        result_model1, result_model2, forecast_dates = forecast('cache/extended_result.csv', target_column, last_index.strftime('%Y-%m-%d'), validity_offset_days)
+        if result_model1 and result_model2:
+            st.session_state.model1_forecast_data, st.session_state.model1_rmse, st.session_state.model1_mape, st.session_state.model1_mape_sum, st.session_state.model1_smape_sum, st.session_state.model1_mdl = result_model1
+            st.session_state.model2_forecast_data, st.session_state.model2_rmse, st.session_state.model2_mape, st.session_state.model2_mape_sum, st.session_state.model2_smape_sum, st.session_state.model2_mdl = result_model2
+            st.session_state.forecast_dates = forecast_dates
+            st.session_state.last_index = last_index
+
+# Assuming the forecast function and other necessary imports are already defined
 
 # Main content
-if st.session_state.get('forecast_data', False):
+if st.session_state.get('model1_forecast_data', False) and st.session_state.get('model2_forecast_data', False):
+    # Add a radio button to select the model
+    model_choice = st.radio(
+        "Select Model",
+        ('Original Model', 'Feature Selection Model')
+    )
+
+    if model_choice == 'Original Model':
+        forecast_data = st.session_state.model1_forecast_data
+        rmse = st.session_state.model1_rmse
+        mape = st.session_state.model1_mape
+        mape_sum = st.session_state.model1_mape_sum
+        smape_sum = st.session_state.model1_smape_sum
+        model = st.session_state.model1_mdl
+    else:
+        forecast_data = st.session_state.model2_forecast_data
+        rmse = st.session_state.model2_rmse
+        mape = st.session_state.model2_mape
+        mape_sum = st.session_state.model2_mape_sum
+        smape_sum = st.session_state.model2_smape_sum
+        model = st.session_state.model2_mdl
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=st.session_state.extended_result.index, y=st.session_state.extended_result[target_column], mode='lines', name='Actual'))
     forecast_index = pd.to_datetime(st.session_state.forecast_dates)
-    fig.add_trace(go.Scatter(x=forecast_index, y=st.session_state.forecast_data, mode='lines', name='Forecast'))
+    fig.add_trace(go.Scatter(x=forecast_index, y=forecast_data, mode='lines', name='Forecast'))
 
     # Add vertical line at last_index
     fig.add_shape(
@@ -81,7 +119,7 @@ if st.session_state.get('forecast_data', False):
         x0=st.session_state.last_index,
         y0=0,
         x1=st.session_state.last_index,
-        y1=max(st.session_state.extended_result[target_column].max(), max(st.session_state.forecast_data)),
+        y1=max(st.session_state.extended_result[target_column].max(), max(forecast_data)),
         line=dict(
             color="red",
             width=2,
@@ -93,10 +131,32 @@ if st.session_state.get('forecast_data', False):
 
     st.markdown("---")
     st.subheader('Forecast Metrics')
-    st.metric('RMSE', st.session_state.rmse)
-    st.metric('MAPE', st.session_state.mape)
-    st.metric('MAPE Validity Summation Window', st.session_state.mape_sum)
-    st.metric('SMAPE Validity Summation Window', st.session_state.smape_sum)
+    st.metric('RMSE', rmse)
+    st.metric('MAPE', mape)
+    st.metric('MAPE Validity Summation Window', mape_sum)
+    st.metric('SMAPE Validity Summation Window', smape_sum)
+
+
+
+
+    # Add model selection and plotting logic
+    if st.session_state.get('model1_mdl', False) and st.session_state.get('model2_mdl', False):
+
+        if model_choice == 'Original Model':
+            model = lgb.Booster(model_str=st.session_state.model1_mdl)
+            print("Original model selected")
+            feature_importance = list(zip(model.feature_name(), model.feature_importance()))
+            plot_feature_importance(feature_importance, "Original Model")
+        else:
+            model = lgb.Booster(model_str=st.session_state.model2_mdl)
+            print("Feat Select model selected")
+            feature_importance = list(zip(model.feature_name(), model.feature_importance()))
+            plot_feature_importance(feature_importance, "Feature Selection Model")
+
+        model_json = save_model_to_json(model)
+        with open('cache/model.json', 'w') as f:
+            f.write(model_json)
+
 
 
     st.markdown("---")

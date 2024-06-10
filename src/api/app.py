@@ -61,15 +61,26 @@ def forecast():
 
     last_index = pd.to_datetime(last_index)
 
-    y_forecast, forecast_dates, rmse, mape, mape_sum, smape_sum = train_and_forecast(df, target_column, last_index, validity_offset_days)
+    result_model1, result_model2, forecast_dates = train_and_forecast(df, target_column, last_index, validity_offset_days)
     
     return jsonify({
-        'forecast': y_forecast.tolist(),
-        'forecast_dates': forecast_dates.tolist(),
-        'rmse': rmse,
-        'mape': mape,
-        'mape_sum': mape_sum,
-        'smape_sum': smape_sum
+        'model1': {
+            'forecast': result_model1[1].tolist(),
+            'rmse': result_model1[2],
+            'mape': result_model1[3],
+            'mape_sum': result_model1[4],
+            'smape_sum': result_model1[5],
+            'model': result_model1[0]
+        },
+        'model2': {
+            'forecast': result_model2[1].tolist(),
+            'rmse': result_model2[2],
+            'mape': result_model2[3],
+            'mape_sum': result_model2[4],
+            'smape_sum': result_model2[5],
+            'model': result_model1[0]
+        },
+        'forecast_dates': forecast_dates.tolist()
     })
 
 if __name__ == '__main__':

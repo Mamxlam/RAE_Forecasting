@@ -38,12 +38,12 @@ def process_time_series(file_path, current_date, forecast_horizon):
         result = pd.read_csv(io.StringIO(json_response['result']), index_col=0, parse_dates=True)
         extended_result = pd.read_csv(io.StringIO(json_response['extended_result']), index_col=0, parse_dates=True)
         extended_result.to_csv('cache/extended_result.csv')  # Save the extended result as extended_result.csv in the cache folder
+        result.to_csv('cache/result.csv')  # Save the result as extended_result.csv in the cache folder
         return result, extended_result
     else:
         st.error(f"Error {response.status_code}: {response.text}")
         return None, None
 
-# Function to forecast data
 def forecast(file_path, target_column, last_index, validity_offset_days):
     url = 'http://127.0.0.1:5000/forecast'
     files = {'file': open(file_path, 'rb')}
@@ -55,16 +55,29 @@ def forecast(file_path, target_column, last_index, validity_offset_days):
     response = requests.post(url, files=files, data=data)
     if response.status_code == 200:
         json_response = response.json()
-        forecast = json_response['forecast']
-        rmse = json_response['rmse']
-        mape = json_response['mape']
-        mape_sum = json_response['mape_sum']
-        smape_sum = json_response['smape_sum']
+        
+        model1_forecast = json_response['model1']['forecast']
+        model1_rmse = json_response['model1']['rmse']
+        model1_mape = json_response['model1']['mape']
+        model1_mape_sum = json_response['model1']['mape_sum']
+        model1_smape_sum = json_response['model1']['smape_sum']
+        model1_mdl = json_response['model1']['model']
+
+        model2_forecast = json_response['model2']['forecast']
+        model2_rmse = json_response['model2']['rmse']
+        model2_mape = json_response['model2']['mape']
+        model2_mape_sum = json_response['model2']['mape_sum']
+        model2_smape_sum = json_response['model2']['smape_sum']
+        model2_mdl = json_response['model2']['model']
+        
         forecast_dates = json_response['forecast_dates']
-        return forecast, forecast_dates, rmse, mape, mape_sum, smape_sum
+        
+        return (model1_forecast, model1_rmse, model1_mape, model1_mape_sum, model1_smape_sum, model1_mdl), \
+               (model2_forecast, model2_rmse, model2_mape, model2_mape_sum, model2_smape_sum, model2_mdl), \
+               forecast_dates
     else:
         st.error(f"Error {response.status_code}: {response.text}")
-        return None, None, None, None, None, None
+        return None, None, None
     
 
 
