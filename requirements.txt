@@ -1,0 +1,13 @@
+Flask==3.0.3
+folium==0.16.0
+lightgbm==4.4.0
+numpy==2.0.0
+pandas==2.2.2
+plotly==5.22.0
+Requests==2.32.3
+scikit_learn==1.2.2
+seaborn==0.13.2
+setuptools==70.0.0
+statsmodels==0.14.2
+streamlit==1.35.0
+streamlit_folium==0.20.0
