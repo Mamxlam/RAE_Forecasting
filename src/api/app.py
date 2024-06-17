@@ -58,16 +58,29 @@ def forecast():
         return jsonify({'error': 'File, target_column, and last_index are required.'}), 400
 
     df = pd.read_csv(file, index_col=0, parse_dates=True)
-    # df = convert_to_datetime(df, columns=['ΗΜΕΡΟΜΗΝΙΑ ΥΠΟΒΟΛΗΣ ΑΙΤΗΣΗΣ', 'ΗΜΕΡΟΜΗΝΙΑ ΕΚΔ. ΑΔ.ΠΑΡΑΓΩΓΗΣ', 'ΗΜΕΡΟΜΗΝΙΑ ΛΗΞΗΣ ΑΔ.ΠΑΡΑΓΩΓΗΣ'])
 
     last_index = pd.to_datetime(last_index)
 
-    y_forecast, rmse, mape = train_and_forecast(df, target_column, last_index, validity_offset_days)
+    result_model1, result_model2, forecast_dates = train_and_forecast(df, target_column, last_index, validity_offset_days)
     
     return jsonify({
-        'forecast': y_forecast.tolist(),
-        'rmse': rmse,
-        'mape': mape
+        'model1': {
+            'forecast': result_model1[1].tolist(),
+            'rmse': result_model1[2],
+            'mape': result_model1[3],
+            'mape_sum': result_model1[4],
+            'smape_sum': result_model1[5],
+            'model': result_model1[0]
+        },
+        'model2': {
+            'forecast': result_model2[1].tolist(),
+            'rmse': result_model2[2],
+            'mape': result_model2[3],
+            'mape_sum': result_model2[4],
+            'smape_sum': result_model2[5],
+            'model': result_model1[0]
+        },
+        'forecast_dates': forecast_dates.tolist()
     })
 
 if __name__ == '__main__':

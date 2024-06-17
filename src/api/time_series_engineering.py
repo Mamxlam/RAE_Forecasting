@@ -107,7 +107,7 @@ class TimeSeriesFeatureEngineering:
         
         return autocorr
 
-    def create_lagged_variables(self, prefix: str, lag_lengths: list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 24, 46, 58]) -> pd.DataFrame:
+    def create_lagged_variables(self, prefix: str, lags: list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 24, 46, 58]) -> pd.DataFrame:
         """
         Create lagged variables for the features with the given prefix.
 
@@ -120,7 +120,7 @@ class TimeSeriesFeatureEngineering:
         """
         lagged_data = pd.DataFrame(index=self.data.index)
         
-        for lag_length in lag_lengths:
+        for lag_length in lags:
             for feature in self.data.filter(like=prefix).columns:
                 lagged_data[f'{feature}_lagged_{lag_length}'] = self.data[feature].shift(lag_length)
         
@@ -208,6 +208,7 @@ def run_feature_engineering(data: pd.DataFrame, mw_prefix: str = '(MW)', rsi_pre
     Returns:
     - pd.DataFrame: DataFrame with engineered features.
     """
+    lag_list = [2,6,12,18,24,30,42,54,66,78,84,90,100]
     engineer = TimeSeriesFeatureEngineering(data, mw_prefix, rsi_prefix)
 
     # Perform seasonal decomposition for MW features
@@ -216,7 +217,9 @@ def run_feature_engineering(data: pd.DataFrame, mw_prefix: str = '(MW)', rsi_pre
     engineer.data = pd.concat([data, decomposition_mw], axis=1)
 
     # Calculate autocorrelation for MW features
-    autocorr_mw = engineer.calculate_autocorrelation(engineer.mw_prefix)
+    autocorr_mw = engineer.calculate_autocorrelation(engineer.mw_prefix, 
+                                                 lags=lag_list
+                                                 )
 
     # Calculate seasonal aggregations for MW features
     seasonal_aggregations_mw = engineer.calculate_seasonal_aggregations(engineer.mw_prefix)
@@ -230,14 +233,20 @@ def run_feature_engineering(data: pd.DataFrame, mw_prefix: str = '(MW)', rsi_pre
     engineer.data = pd.concat([data, decomposition_mw, autocorr_mw, seasonal_aggregations_mw, expanding_metrics_mw, rolling_metrics_mw], axis=1)
 
     # Create lagged variables for MW features
-    lagged_data_mw = engineer.create_lagged_variables(engineer.mw_prefix)
+    lagged_data_mw = engineer.create_lagged_variables(engineer.mw_prefix, 
+                                                 lags=lag_list
+                                                 )
 
     # Repeat the process for RSI features
-    autocorr_rsi = engineer.calculate_autocorrelation(engineer.rsi_prefix)
+    autocorr_rsi = engineer.calculate_autocorrelation(engineer.rsi_prefix, 
+                                                 lags=lag_list
+                                                 )
     seasonal_aggregations_rsi = engineer.calculate_seasonal_aggregations(engineer.rsi_prefix)
     expanding_metrics_rsi = engineer.calculate_expanding_metrics(engineer.rsi_prefix)
     rolling_metrics_rsi = engineer.calculate_rolling_metrics(engineer.rsi_prefix)
-    lagged_data_rsi = engineer.create_lagged_variables(engineer.rsi_prefix)
+    lagged_data_rsi = engineer.create_lagged_variables(engineer.rsi_prefix, 
+                                                 lags=lag_list
+                                                 )
 
     # Extract time-based features
     time_features = engineer.extract_time_based_features()
